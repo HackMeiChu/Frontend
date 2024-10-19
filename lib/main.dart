@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.example.app',
               ),
-              
+              // TODO: add search bar here!
             ],
           ),
         ],
