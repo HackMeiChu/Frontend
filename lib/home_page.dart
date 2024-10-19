@@ -5,6 +5,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:transportation/widget/row_button.dart';
+import 'package:transportation/widget/search_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -69,29 +71,44 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('User Location Map'),
-      ),
-      body: _center == null
-        ? const Center(child: CircularProgressIndicator())
-        : SizedBox(
-          height: double.infinity,
-          child: GoogleMap(
-            onMapCreated: _onMapCreated,
-            initialCameraPosition: CameraPosition(
-              target: _center!,
-              zoom: 15.0,
-            ),
-            style: _mapStyleString,
-            markers: {
-              Marker(
-                markerId: const MarkerId('user_location'),
-                position: _center!,
-                infoWindow: const InfoWindow(title: 'Your Location'),
+      body: Stack(
+        children: [
+        _center == null
+          ? const Center(child: CircularProgressIndicator())
+          : SizedBox(
+            height: double.infinity,
+            child: GoogleMap(
+              mapType: MapType.normal,
+              onMapCreated: _onMapCreated,
+              myLocationEnabled: true,
+              initialCameraPosition: CameraPosition(
+                target: _center!,
+                zoom: 15.0,
               ),
-            },
+              style: _mapStyleString,
+              markers: {
+                // Marker(
+                //   markerId: const MarkerId('user_location'),
+                //   position: _center!,
+                //   infoWindow: const InfoWindow(title: 'Your Location'),
+                // ),
+              },
+            ),
           ),
-        ),
+          Positioned(
+            top: 20,
+            child: Column(
+              // mainAxisAlignment: MainAxisAlignment.start,
+              // crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomSearchBar(), 
+                SizedBox(height: 10,),
+                RowButton()
+              ],
+            ),
+          )
+        ]
+      )
     );
   }
 }
