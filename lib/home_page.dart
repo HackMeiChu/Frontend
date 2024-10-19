@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:transportation/widget/row_button.dart';
 import 'package:transportation/widget/search_bar.dart';
+import 'package:transportation/widget/scroll_up_list.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -106,7 +107,13 @@ class _HomePageState extends State<HomePage> {
                 RowButton()
               ],
             ),
-          )
+          ),
+          const Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: ScrollUpList(), // Use the ScrollUpList widget here
+          ),
         ]
       )
     );

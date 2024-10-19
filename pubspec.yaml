@@ -11,6 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  url_launcher: ^6.1.5  # Add this dependency
 
   cupertino_icons: ^1.0.6
   flutter_map: ^7.0.2
