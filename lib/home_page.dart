@@ -88,29 +88,40 @@ class _HomePageState extends State<HomePage> {
   Future<void> _handlePressButton() async {
     // show input autocomplete with selected mode
     // then get the Prediction selected
-    Prediction? p = await PlacesAutocomplete.show(
-      context: context,
-      apiKey: kGoogleApiKey,
-      onError: onError,
-      // mode: _mode,
-      language: "fr",
-      decoration: InputDecoration(
-        hintText: 'Search',
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
-            color: Colors.white,
+    try{
+
+      Prediction? p = await PlacesAutocomplete.show( //p is null
+        context: context,
+        apiKey: kGoogleApiKey,
+        onError: onError,
+        // mode: _mode,
+        language: "zh",
+        decoration: InputDecoration(
+          hintText: 'Search',
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(
+              color: Colors.white,
+            ),
           ),
         ),
-      ),
-      components: [Component(Component.country, "fr")],
-    );
-
-    displayPrediction(p, homeScaffoldKey.currentState!);
+        components: [Component(Component.country, "zh")],
+      );
+      log("handle press button");
+      if (p != null && homeScaffoldKey.currentState != null) {
+        displayPrediction(p, homeScaffoldKey.currentState!);
+      } else {
+        log("Prediction is null or ScaffoldState is null");
+      }
+    }
+    catch (e) {
+      print(e);
+    }
   }
 
 
-Future<Null> displayPrediction(Prediction? p, ScaffoldState scaffold) async {
+Future<Null> displayPrediction(Prediction p, ScaffoldState scaffold) async {
+  log("in display prediction");
   if (p != null) {
     // get detail (lat/lng)
     GoogleMapsPlaces _places = GoogleMapsPlaces(
