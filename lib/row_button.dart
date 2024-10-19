@@ -8,6 +8,37 @@ class RowButton extends StatefulWidget {
   _RowButtonState createState() => _RowButtonState();
 }
 class _RowButtonState extends State<RowButton>{
+
+   void _pickDateTime() async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+      helpText: "預計抵達日期及時間"
+    );
+
+    if (picked != null) {
+      TimeOfDay? time = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+
+      if (time != null) {
+        setState(() {
+          isImmediate = false; // "選擇日期與時間" is now selected
+          DateTime fullDateTime = DateTime(
+            picked.year,
+            picked.month,
+            picked.day,
+            time.hour,
+            time.minute,
+          );
+          selectedDateTime = DateFormat('yyyy-MM-dd HH:mm').format(fullDateTime);
+        });
+      }
+    }
+  }
   
   bool isImmediate = true; // Whether "立即出發" is selected
   Color leftButtonColor = Colors.purple; // Default color for the left button ("立即出發")
