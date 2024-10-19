@@ -2,18 +2,11 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_api_headers/google_api_headers.dart';
-// import 'package:flutter/material.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
-import 'package:google_maps_webservice/places.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:transportation/widget/row_button.dart';
 import 'package:transportation/widget/search_bar.dart';
-
-final homeScaffoldKey = GlobalKey<ScaffoldState>();
-final kGoogleApiKey = "AIzaSyDFvR0Wqu6IS23_J8DUg5C9KM8mOXaEnHA";
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -74,68 +67,10 @@ class _HomePageState extends State<HomePage> {
       _center = LatLng(_currentPosition!.latitude, _currentPosition!.longitude);
     });
   }
-
-  void onError(PlacesAutocompleteResponse response) {
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(response.errorMessage!)
-        // duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
-  Future<void> _handlePressButton() async {
-    // show input autocomplete with selected mode
-    // then get the Prediction selected
-    Prediction? p = await PlacesAutocomplete.show(
-      context: context,
-      apiKey: kGoogleApiKey,
-      onError: onError,
-      // mode: _mode,
-      language: "fr",
-      decoration: InputDecoration(
-        hintText: 'Search',
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
-            color: Colors.white,
-          ),
-        ),
-      ),
-      components: [Component(Component.country, "fr")],
-    );
-
-    displayPrediction(p, homeScaffoldKey.currentState!);
-  }
-
-
-Future<Null> displayPrediction(Prediction? p, ScaffoldState scaffold) async {
-  if (p != null) {
-    // get detail (lat/lng)
-    GoogleMapsPlaces _places = GoogleMapsPlaces(
-      apiKey: kGoogleApiKey,
-      apiHeaders: await GoogleApiHeaders().getHeaders(),
-    );
-    PlacesDetailsResponse detail = await _places.getDetailsByPlaceId(p.placeId!);
-    final lat = detail.result.geometry!.location.lat;
-    final lng = detail.result.geometry!.location.lng;
-
-    if (!mounted) return;
-  
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$lat, $lng'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-}
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: homeScaffoldKey,
       body: Stack(
         children: [
         _center == null
@@ -166,11 +101,7 @@ Future<Null> displayPrediction(Prediction? p, ScaffoldState scaffold) async {
               // mainAxisAlignment: MainAxisAlignment.start,
               // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ElevatedButton(
-                  onPressed: _handlePressButton, 
-                  child: Text("Search Place")
-                ),
-                // CustomSearchBar(), 
+                CustomSearchBar(), 
                 SizedBox(height: 10,),
                 RowButton()
               ],
