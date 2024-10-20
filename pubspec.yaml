@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  url_launcher: ^6.1.5  # Add this dependency
   cupertino_icons: ^1.0.6
   flutter_map: ^7.0.2
   latlng: ^2.0.7
@@ -20,6 +20,8 @@ dependencies:
   geolocator: ^13.0.1
   geocoding: ^3.0.0
   google_maps_flutter: ^2.9.0
+  package_info_plus: ^4.0.0
+  google_places_flutter: ^2.0.9
 
 dev_dependencies:
   flutter_test:

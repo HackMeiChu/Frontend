@@ -1,29 +1,118 @@
+// import 'package:flutter/material.dart';
+// import 'package:google_places_flutter/google_places_flutter.dart';
+// import 'package:google_places_flutter/model/prediction.dart';
+
+// class MyHomePage extends StatefulWidget {
+//   MyHomePage({Key? key, this.title}) : super(key: key);
+
+//   final String? title;
+
+//   @override
+//   _MyHomePageState createState() => _MyHomePageState();
+// }
+
+// class _MyHomePageState extends State<MyHomePage> {
+//   TextEditingController controller = TextEditingController();
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(widget.title ?? ""),
+//       ),
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.start,
+//           children: <Widget>[
+//             SizedBox(height: 20),
+//             placesAutoCompleteTextField(),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   placesAutoCompleteTextField() {
+//     return Container(
+//       padding: EdgeInsets.symmetric(horizontal: 20),
+//       child: GooglePlaceAutoCompleteTextField(
+//         textEditingController: controller,
+//         googleAPIKey:"AIzaSyDFvR0Wqu6IS23_J8DUg5C9KM8mOXaEnHA",
+//         inputDecoration: InputDecoration(
+//           hintText: "Search your location",
+//           border: InputBorder.none,
+//           enabledBorder: InputBorder.none,
+//         ),
+//         debounceTime: 400,
+//         countries: [],
+//         isLatLngRequired: true,
+//         getPlaceDetailWithLatLng: (Prediction prediction) {
+//           print("placeDetails" + prediction.lat.toString());
+//         },
+
+//         itemClick: (Prediction prediction) {
+//           controller.text = prediction.description ?? "";
+//           controller.selection = TextSelection.fromPosition(
+//               TextPosition(offset: prediction.description?.length ?? 0));
+//         },
+//         seperatedBuilder: Divider(),
+//         containerHorizontalPadding: 10,
+
+
+//         // OPTIONAL// If you want to customize list view item builder
+//         itemBuilder: (context, index, Prediction prediction) {
+//           return Container(
+//             padding: EdgeInsets.all(10),
+//             child: Row(
+//               children: [
+//                 Icon(Icons.location_on),
+//                 SizedBox(
+//                   width: 7,
+//                 ),
+//                 Expanded(child: Text("${prediction.description ?? ""}"))
+//               ],
+//             ),
+//           );
+//         },
+
+//         isCrossBtnShown: true,
+
+//         // default 600 ms ,
+//       ),
+//     );
+//   }
+// }
+
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:google_places_flutter/model/prediction.dart';
+import 'package:provider/provider.dart';
+import 'package:transportation/models/parking_info_model.dart';
+import 'package:transportation/services/fetch_parking_info.dart';
 import 'package:transportation/widget/row_button.dart';
-import 'package:transportation/widget/search_bar.dart';
 
+import 'package:transportation/widget/scroll_up_list.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();
 }
+
 class _HomePageState extends State<HomePage> {
   GoogleMapController? mapController;
   LatLng? _center;
   Position? _currentPosition;
-  late String _mapStyleString;
+  TextEditingController controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _loadStyle();
     _getUserLocation();
   }
 
@@ -31,32 +120,24 @@ class _HomePageState extends State<HomePage> {
     mapController = controller;
   }
 
-  void _loadStyle() async {
-    await rootBundle.loadString('assets/map_style.json').then((string) {
-        _mapStyleString = string;
-        //Black road and path:  I have this bug only on emulator, real device works fine.
-    });
-  }
+ 
   _getUserLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
     // Check if location services are enabled
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      log("service is not available");
       return;
     }
     // Request permission to get the user's location
     permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.deniedForever) {
-        log("permission deniedForever");
         return;
       }
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission != LocationPermission.whileInUse &&
         permission != LocationPermission.always) {
-        log("permission denied");
         return;
       }
     }
@@ -67,10 +148,70 @@ class _HomePageState extends State<HomePage> {
       _center = LatLng(_currentPosition!.latitude, _currentPosition!.longitude);
     });
   }
-  
+
+  Widget placesAutoCompleteTextField(context) {
+
+    // final fetchDataService = Provider.of<FetchDataService>(context);
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: GooglePlaceAutoCompleteTextField(
+        textEditingController: controller,
+        googleAPIKey:"AIzaSyDFvR0Wqu6IS23_J8DUg5C9KM8mOXaEnHA",
+        inputDecoration: const InputDecoration(
+          hintText: "Search your location",
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          fillColor: Colors.white,
+          filled: true,
+        ),
+        debounceTime: 400,
+        countries: [],
+        isLatLngRequired: true,
+        getPlaceDetailWithLatLng: (Prediction prediction) {
+          print("placeDetails" + prediction.lat.toString());
+        },
+
+        itemClick: (Prediction prediction) {
+          controller.text = prediction.description ?? "";
+          controller.selection = TextSelection.fromPosition(
+              TextPosition(offset: prediction.description?.length ?? 0));
+          // fetchDataService.getNearbyPredictParkingSpe(double.parse(prediction.lat!), double.parse(prediction.lng!), 30);
+        },
+        seperatedBuilder: Divider(),
+        containerHorizontalPadding: 10,
+
+
+        //OPTIONAL// If you want to customize list view item builder
+        itemBuilder: (context, index, Prediction prediction) {
+          return Container(
+            padding: EdgeInsets.all(10),
+            child: Row(
+              children: [
+                Icon(Icons.location_on),
+                SizedBox(
+                  width: 7,
+                ),
+                Expanded(child: Text("${prediction.description ?? ""}"))
+              ],
+            ),
+          );
+        },
+
+        isCrossBtnShown: true,
+
+        // default 600 ms ,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    
+    final fetchDataService = Provider.of<FetchDataService>(context);
+
     return Scaffold(
+      // key: homeScaffoldKey,
       body: Stack(
         children: [
         _center == null
@@ -85,30 +226,35 @@ class _HomePageState extends State<HomePage> {
                 target: _center!,
                 zoom: 15.0,
               ),
-              style: _mapStyleString,
-              markers: {
-                // Marker(
-                //   markerId: const MarkerId('user_location'),
-                //   position: _center!,
-                //   infoWindow: const InfoWindow(title: 'Your Location'),
-                // ),
-              },
             ),
           ),
           Positioned(
             top: 20,
+            right: 0,
+            left:0,
             child: Column(
-              // mainAxisAlignment: MainAxisAlignment.start,
-              // crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                CustomSearchBar(), 
+                placesAutoCompleteTextField(context),
                 SizedBox(height: 10,),
-                RowButton()
+                RowButton(),
+                Text('${fetchDataService.counter}'),
+                FilledButton(
+                  onPressed: ()=>{fetchDataService.count()},
+                  child: Text("Count ++"),
+                )
               ],
             ),
-          )
+          ),
+          const Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: ScrollUpList(), // Use the ScrollUpList widget here
+          ),
         ]
       )
     );
   }
 }
+
