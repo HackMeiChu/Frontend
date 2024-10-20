@@ -30,7 +30,7 @@ class _ScrollUpListState extends State<ScrollUpList> {
     // Call the method to fetch parking information
     await fetchDataService.getParkingInfo();
     // Optionally call getNearbyPredictParkingSpe if needed
-    await fetchDataService.getNearbyPredictParkingSpe(24.8095628, 120.9721614, 30);
+    await fetchDataService.getNearbyPredictParkingSpe(24.8095628, 120.9721614, 30, false);
   }
 
   // Toggle panel expansion state
@@ -59,7 +59,7 @@ class _ScrollUpListState extends State<ScrollUpList> {
 
     // Match parkinglotPredSpaces and parkinglogInfo by parking lot ID
     for (ParkinglotPredSpace predSpace in fetchDataService.parkinglotPredSpace_list) {
-      for (ParkinglotInfo info in fetchDataService.parkinglogInfo) {
+      for (ParkinglotInfo info in fetchDataService.parkinglotInfo) {
         if (info.id == predSpace.parkinglot_id) {
           // Calculate the distance from the user's search location to the parking lot
           String distance = '';
