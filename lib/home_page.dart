@@ -238,11 +238,6 @@ class _HomePageState extends State<HomePage> {
                 placesAutoCompleteTextField(context),
                 SizedBox(height: 10,),
                 RowButton(),
-                Text('${fetchDataService.counter}'),
-                FilledButton(
-                  onPressed: ()=>{fetchDataService.count()},
-                  child: Text("Count ++"),
-                )
               ],
             ),
           ),
